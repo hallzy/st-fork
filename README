@@ -2,6 +2,16 @@ st - simple terminal
 --------------------
 st is a simple terminal emulator for X which sucks less.
 
+Customizations
+--------------
+
+- Changed colours to be gruvbox like
+- Changed the font
+- Installed the vimbrowse patch
+- Installed the spoiler patch
+- Installed the newterm patch (I also fixed a compilation warning about the
+  result of chrdir not being used)
+
 
 Requirements
 ------------
