@@ -13,6 +13,16 @@ Customizations
   result of chrdir not being used)
 
 
+BRANCHES
+--------
+
+- master branch is what I use
+- upstream-master is a branch I use to track the suckless repository so that I
+  can easily merge updates into my build
+- All remaining branches are branches for specific patches, branched from
+  upstream master, so that I can merge them back in to master
+
+
 Requirements
 ------------
 In order to build st you need the Xlib header files.
