@@ -13,6 +13,7 @@ Customizations
   result of chrdir not being used)
 - Installed copyurl patch
 - Installed openclipboard patch (And fixed compile warning)
+- Installed bold is not bright patch
 
 
 BRANCHES
