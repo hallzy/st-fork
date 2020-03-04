@@ -11,6 +11,8 @@ Customizations
 - Installed the spoiler patch
 - Installed the newterm patch (I also fixed a compilation warning about the
   result of chrdir not being used)
+- Installed copyurl patch
+- Installed openclipboard patch (And fixed compile warning)
 
 
 BRANCHES

@@ -196,6 +196,7 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Return,      newterm,        {.i =  0} },
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
+	{ MODKEY,               XK_o,           opencopied,     {.v = "xdg-open"} },
 };
 
 /*
@@ -464,9 +465,9 @@ static uint selmasks[] = {
  * of single wide characters.
  */
 static char ascii_printable[] =
-	" !\"#$%&'()*+,-./0123456789:;<=>?"
-	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
-	"`abcdefghijklmnopqrstuvwxyz{|}~";
+" !\"#$%&'()*+,-./0123456789:;<=>?"
+"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+"`abcdefghijklmnopqrstuvwxyz{|}~";
 
 
 /// word sepearors normal mode
