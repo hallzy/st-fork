@@ -77,6 +77,7 @@ void kscrollup(const Arg *);
 void normalMode(Arg const *);
 
 void opencopied(const Arg *);
+void externalpipe(const Arg *);
 void printscreen(const Arg *);
 void printsel(const Arg *);
 void sendbreak(const Arg *);

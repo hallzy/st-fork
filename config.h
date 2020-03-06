@@ -1,5 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
+// If at work, define work
+/* #define WORK */
+
 /*
  * appearance
  *
@@ -84,9 +87,9 @@ unsigned int tabspaces = 8;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
-	"#282828", /* hard contrast: #1d2021 / soft contrast: #32302f */
+	"#555753", /* hard contrast: #1d2021 / soft contrast: #32302f */
 	"#cc241d",
-	"#98971a",
+	"#8AE234",
 	"#d79921",
 	"#458588",
 	"#b16286",
@@ -154,6 +157,30 @@ static unsigned int highlightFg = 15;
 static unsigned int currentBg = 8;
 static unsigned int currentFg = 15;
 
+// External Pipe cmds
+#define URL_CMD \
+	"sed 's/.*│//g' | " \
+	"tr -d '\n' | " \
+	"grep -aEo '(((http|https)://|www\\.)[a-zA-Z0-9.]*[:]?[a-zA-Z0-9./&%?$#=_-]*)|((magnet:\\?xt=urn:btih:)[a-zA-Z0-9]*)' | " \
+	"uniq | " \
+	"tac | " \
+	"sed 's/^www./http:\\/\\/www\\./g' | " \
+	"dmenu -i -p " \
+
+static const char *openurlcmd[] = {
+	"/bin/sh",
+	"-c",
+    URL_CMD " 'Follow which url?' -l 10 | xargs -r xdg-open",
+	0
+};
+
+static const char *copyurlcmd[] = {
+	"/bin/sh",
+	"-c",
+    URL_CMD " 'Copy which url?' -l 10 | tr -d '\n' | xclip -selection clipboard",
+	0
+};
+
 /*
  * Force mouse select/shortcuts while mask is active (when MODE_MOUSE is set).
  * Note that if you want to use ShiftMask with selmasks, set this to an other
@@ -192,11 +219,16 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-	{ MODKEY,               XK_l,           copyurl,        {.i =  0} },
 	{ TERMMOD,              XK_Return,      newterm,        {.i =  0} },
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
+#ifdef WORK
 	{ MODKEY,               XK_o,           opencopied,     {.v = "xdg-open"} },
+	{ MODKEY,               XK_l,           copyurl,        {.i =  0} },
+#else
+	{ MODKEY,               XK_o,           externalpipe,   {.v = openurlcmd} },
+	{ MODKEY,               XK_l,           externalpipe,   {.v = copyurlcmd} },
+#endif
 };
 
 /*
@@ -509,4 +541,3 @@ unsigned int fgCommandVisualLine = 232;
 
 unsigned int bgPos = 15;
 unsigned int fgPos = 16;
-
