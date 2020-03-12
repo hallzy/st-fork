@@ -8,6 +8,7 @@
 #include "glyph.h"
 
 #include <stdint.h>
+#include <time.h>
 
 #define HISTSIZE      2500
 
@@ -59,6 +60,7 @@ typedef struct {
 	int charset;  /* current charset */
 	int icharset; /* selected charset for sequence */
 	int *tabs;
+	struct timespec last_ximspot_update;
 } Term;
 
 extern Term term;
