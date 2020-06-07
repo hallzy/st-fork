@@ -61,6 +61,7 @@ typedef struct {
 	int icharset; /* selected charset for sequence */
 	int *tabs;
 	struct timespec last_ximspot_update;
+	Rune lastc;   /* last printed char outside of sequence, 0 if control */
 } Term;
 
 extern Term term;

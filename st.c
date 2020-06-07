@@ -43,7 +43,7 @@
 
 /* macros */
 #define IS_SET(flag)		((term.mode & (flag)) != 0)
-#define ISCONTROLC0(c)		(BETWEEN(c, 0, 0x1f) || (c) == '\177')
+#define ISCONTROLC0(c)		(BETWEEN(c, 0, 0x1f) || (c) == 0x7f)
 #define ISCONTROLC1(c)		(BETWEEN(c, 0x80, 0x9f))
 #define ISCONTROL(c)		(ISCONTROLC0(c) || ISCONTROLC1(c))
 #define ISDELIM(u)		(u && wcschr(worddelimiters, u))
@@ -621,7 +621,8 @@ getsel(void)
 		 * st.
 		 * FIXME: Fix the computer world.
 		 */
-		if ((y < sel.ne.y || lastx >= linelen) && !(last->mode & ATTR_WRAP))
+		if ((y < sel.ne.y || lastx >= linelen) &&
+		    (!(last->mode & ATTR_WRAP) || sel.type == SEL_RECTANGULAR))
 			*ptr++ = '\n';
 	}
 	*ptr = 0;
@@ -828,7 +829,6 @@ ttyread(void)
 		if (buflen > 0)
 			memmove(buf, buf + written, buflen);
 		return ret;
-
 	}
 }
 
@@ -1169,28 +1169,18 @@ selscroll(int orig, int n)
 	if (sel.ob.x == -1)
 		return;
 
-	if (BETWEEN(sel.ob.y, orig, term.bot) || BETWEEN(sel.oe.y, orig, term.bot)) {
+	if (BETWEEN(sel.nb.y, orig, term.bot) != BETWEEN(sel.ne.y, orig, term.bot)) {
+		selclear();
+	} else if (BETWEEN(sel.nb.y, orig, term.bot)) {
 		sel.oe.scroll = sel.ob.scroll = term.scr;
-		if ((sel.ob.y += n) > term.bot || (sel.oe.y += n) < term.top) {
+		sel.ob.y += n;
+		sel.oe.y += n;
+		if (sel.ob.y < term.top || sel.ob.y > term.bot ||
+		    sel.oe.y < term.top || sel.oe.y > term.bot) {
 			selclear();
-			return;
-		}
-		if (sel.type == SEL_RECTANGULAR) {
-			if (sel.ob.y < term.top)
-				sel.ob.y = term.top;
-			if (sel.oe.y > term.bot)
-				sel.oe.y = term.bot;
 		} else {
-			if (sel.ob.y < term.top) {
-				sel.ob.y = term.top;
-				sel.ob.x = 0;
-			}
-			if (sel.oe.y > term.bot) {
-				sel.oe.y = term.bot;
-				sel.oe.x = term.col;
-			}
+			selnormalize();
 		}
-		selnormalize();
 	}
 }
 
@@ -1730,6 +1720,12 @@ csihandle(void)
 		if (csiescseq.arg[0] == 0)
 			ttywrite(vtiden, strlen(vtiden), 0);
 		break;
+	case 'b': /* REP -- if last char is printable print it <n> more times */
+		DEFAULT(csiescseq.arg[0], 1);
+		if (term.lastc)
+			while (csiescseq.arg[0]-- > 0)
+				tputc(term.lastc);
+		break;
 	case 'C': /* CUF -- Cursor <n> Forward */
 	case 'a': /* HPR -- Cursor <n> Forward */
 		DEFAULT(csiescseq.arg[0], 1);
@@ -1853,7 +1849,7 @@ csihandle(void)
 		break;
 	case 'n': /* DSR – Device Status Report (cursor position) */
 		if (csiescseq.arg[0] == 6) {
-			len = snprintf(buf, sizeof(buf),"\033[%i;%iR",
+			len = snprintf(buf, sizeof(buf), "\033[%i;%iR",
 					term.c.y+1, term.c.x+1);
 			ttywrite(buf, len, 0);
 		}
@@ -1937,7 +1933,7 @@ strhandle(void)
 				xsettitle(strescseq.args[1]);
 			return;
 		case 52:
-			if (narg > 2) {
+			if (narg > 2 && allowwindowops) {
 				dec = base64dec(strescseq.args[2]);
 				if (dec) {
 					xsetsel(dec);
@@ -2149,7 +2145,7 @@ tdumpline(int n)
 	bp = &term.line[n][0];
 	end = &bp[MIN(tlinelen(n), term.col) - 1];
 	if (bp != end || bp->u != ' ') {
-		for ( ;bp <= end; ++bp)
+		for ( ; bp <= end; ++bp)
 			tprinter(buf, utf8encode(bp->u, buf));
 	}
 	tprinter("\n", 1);
@@ -2279,6 +2275,7 @@ tcontrolcode(uchar ascii)
 		return;
 	case '\032': /* SUB */
 		tsetchar('?', &term.c.attr, term.c.x, term.c.y);
+		/* FALLTHROUGH */
 	case '\030': /* CAN */
 		csireset();
 		break;
@@ -2433,15 +2430,13 @@ tputc(Rune u)
 	Glyph *gp;
 
 	control = ISCONTROL(u);
-	if (!IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
+	if (u < 127 || !IS_SET(MODE_UTF8 | MODE_SIXEL)) {
 		c[0] = u;
 		width = len = 1;
 	} else {
 		len = utf8encode(u, c);
-		if (!control && (width = wcwidth(u)) == -1) {
-			memcpy(c, "\357\277\275", 4); /* UTF_INVALID */
+		if (!control && (width = wcwidth(u)) == -1)
 			width = 1;
-		}
 	}
 
 	if (IS_SET(MODE_PRINT))
@@ -2509,6 +2504,8 @@ check_control_code:
 		/*
 		 * control codes are not shown ever
 		 */
+		if (!term.esc)
+			term.lastc = 0;
 		return;
 	} else if (term.esc & ESC_START) {
 		if (term.esc & ESC_CSI) {
@@ -2539,7 +2536,7 @@ check_control_code:
 		 */
 		return;
 	}
-	if (sel.ob.x != -1 && BETWEEN(term.c.y, sel.ob.y, sel.oe.y))
+	if (selected(term.c.x, term.c.y))
 		selclear();
 
 	gp = &term.line[term.c.y][term.c.x];
@@ -2558,6 +2555,7 @@ check_control_code:
 	}
 
 	tsetchar(u, &term.c.attr, term.c.x, term.c.y);
+	term.lastc = u;
 
 	if (width == 2) {
 		gp->mode |= ATTR_WIDE;
