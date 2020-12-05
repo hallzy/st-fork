@@ -464,6 +464,22 @@ int highlighted(int x, int y) {
 	return false;
 }
 
+// Find the end of the line (the last non whitespace character)
+int eol() {
+	// Start at the last column of the terminal
+	int x = term.col;
+
+	// line number will be consistent
+	const int y = term.c.y;
+
+	// Keep moving left until we reach a non space character, or we reach the
+	// beginning of the line
+	while (x > 1 && isspace((TLINE(y)[x - 1].u))) {
+		x--;
+	}
+	return x - 1;
+}
+
 ExitState kpressNormalMode(char const * cs, int len, bool ctrl, void const *v) {
 	KeySym const * const ksym = (KeySym*) v;
 	bool const esc = ksym &&  *ksym == XK_Escape;
@@ -633,20 +649,21 @@ ExitState kpressNormalMode(char const * cs, int len, bool ctrl, void const *v) {
 		case 'j': sign = 1; FALLTHROUGH
 		case 'k': moveLine(max(stateVB.motion.amount,1) * sign);
 			  goto motionFinish;
-		case 'H': term.c.y = 0;
+		case 'J': sign = 1; FALLTHROUGH
+		case 'K': moveLine(max(stateVB.motion.amount, term.row / 2) * sign);
 			  goto motionFinish;
 		case 'M': term.c.y = term.bot / 2;
-			  goto motionFinish;
-		case 'L': term.c.y = term.bot;
 			  goto motionFinish;
 		case 'G': applyPosition(&stateVB.initialPosition);
 			  goto motionFinish;
 		case 'l': sign = 1; FALLTHROUGH
 		case 'h': moveLetter(sign * max(stateVB.motion.amount,1));
 			  goto motionFinish;
+		case 'H': FALLTHROUGH
 		case '0': term.c.x = 0;
 			  goto motionFinish;
-		case '$': term.c.x = term.col-1;
+		case 'L': FALLTHROUGH
+		case '$': term.c.x = eol();
 			  goto motionFinish;
 		case 'w': FALLTHROUGH
 		case 'W': FALLTHROUGH

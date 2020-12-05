@@ -14,6 +14,14 @@ Customizations
 - Installed copyurl patch
 - Installed openclipboard patch (And fixed compile warning)
 - Installed bold is not bright patch
+- 'scroll' as the scroll command
+- Modified normal mode for vim-browse:
+  - 'H' takes you to the beginning of the line
+  - 'L' takes you to the end of the line
+    - This takes you to the last non whitespace character instead of the end of
+      the terminal output
+  - 'K' takes you up half the screen
+  - 'J' takes you down half the screen
 
 
 BRANCHES

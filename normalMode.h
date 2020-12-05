@@ -27,6 +27,9 @@ void onMove(void);
 /// is to be highlighted.
 int highlighted(int, int);
 
+// Moves cursor to the end of the line for the $ key
+int eol();
+
 /// Handles keys in normal mode.
 ExitState kpressNormalMode(char const * decoded, int len, bool ctrlPressed,
 		void const * ksym);
