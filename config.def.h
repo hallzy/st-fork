@@ -522,12 +522,12 @@ static char ascii_printable[] =
 	"`abcdefghijklmnopqrstuvwxyz{|}~";
 
 
-/// word sepearors normal mode
+/// word separators normal mode
 /// [Vim Browse].
 char wordDelimSmall[] = " \t!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-char wordDelimLarge[] = " \t"; /// <Word sepearors normal mode (capital W)
+char wordDelimLarge[] = " \t"; /// <Word separators normal mode (capital W)
 
-/// Shortcusts executed in normal mode (which should not already be in use)
+/// Shortcuts executed in normal mode (which should not already be in use)
 /// [Vim Browse].
 struct NormalModeShortcuts normalModeShortcuts [] = {
 	{ 'R', "?Building\n" },
@@ -536,8 +536,8 @@ struct NormalModeShortcuts normalModeShortcuts [] = {
 	{ 'f', "/: error:\n" },
 	{ 'Q', "?[Leaving vim, starting execution]\n" },
 	{ 'S', "Qf" },
-	{ 'X', "?juli@machine\n" },
-	{ 'x', "/juli@machine\n" },
+	{ 'x', "?steven@vaio-mate [\n" },
+	{ 'X', "/steven@vaio-mate [\n" },
 };
 
 size_t const amountNormalModeShortcuts = sizeof(normalModeShortcuts) / sizeof(*normalModeShortcuts);
