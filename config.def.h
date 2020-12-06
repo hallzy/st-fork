@@ -175,27 +175,15 @@ static unsigned int highlightFg = 15;
 static unsigned int currentBg = 8;
 static unsigned int currentFg = 15;
 
-// External Pipe cmds
-#define URL_CMD \
-	"sed 's/.*│//g' | " \
-	"tr -d '\n' | " \
-	"grep -aEo '(((http|https)://|www\\.)[a-zA-Z0-9.]*[:]?[a-zA-Z0-9./&%?$#=_-]*)|((magnet:\\?xt=urn:btih:)[a-zA-Z0-9]*)' | " \
-	"uniq | " \
-	"tac | " \
-	"sed 's/^www./http:\\/\\/www\\./g' | " \
-	"dmenu -i -p " \
-
-static const char *openurlcmd[] = {
-	"/bin/sh",
-	"-c",
-    URL_CMD " 'Follow which url?' -l 10 | xargs -r xdg-open",
+static const char *opencmd[] = {
+	"dwm_copy.sh",
+	"open",
 	0
 };
 
-static const char *copyurlcmd[] = {
-	"/bin/sh",
-	"-c",
-    URL_CMD " 'Copy which url?' -l 10 | tr -d '\n' | xclip -selection clipboard",
+static const char *copycmd[] = {
+	"dwm_copy.sh",
+	"copy",
 	0
 };
 
@@ -246,8 +234,8 @@ static Shortcut shortcuts[] = {
 	{ MODKEY,               XK_o,           opencopied,     {.v = "xdg-open"} },
 	{ MODKEY,               XK_l,           copyurl,        {.i =  0} },
 #else
-	{ MODKEY,               XK_o,           externalpipe,   {.v = openurlcmd} },
-	{ MODKEY,               XK_l,           externalpipe,   {.v = copyurlcmd} },
+	{ MODKEY,               XK_o,           externalpipe,   {.v = opencmd} },
+	{ MODKEY,               XK_l,           externalpipe,   {.v = copycmd} },
 #endif
 };
 
