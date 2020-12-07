@@ -1,7 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 
-// If at work, define work
-/* #define WORK */
+#include "computer_specific.h"
 
 /*
  * appearance
@@ -230,13 +229,8 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Return,      newterm,        {.i =  0} },
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
-#ifdef WORK
-	{ MODKEY,               XK_o,           opencopied,     {.v = "xdg-open"} },
-	{ MODKEY,               XK_l,           copyurl,        {.i =  0} },
-#else
 	{ MODKEY,               XK_o,           externalpipe,   {.v = opencmd} },
 	{ MODKEY,               XK_l,           externalpipe,   {.v = copycmd} },
-#endif
 };
 
 /*
@@ -524,8 +518,13 @@ struct NormalModeShortcuts normalModeShortcuts [] = {
 	{ 'f', "/: error:\n" },
 	{ 'Q', "?[Leaving vim, starting execution]\n" },
 	{ 'S', "Qf" },
+#ifdef WORK
+	{ 'x', "?steven@stn-dell-xps [\n" },
+	{ 'X', "/steven@stn-dell-xps [\n" },
+#else
 	{ 'x', "?steven@vaio-mate [\n" },
 	{ 'X', "/steven@vaio-mate [\n" },
+#endif
 };
 
 size_t const amountNormalModeShortcuts = sizeof(normalModeShortcuts) / sizeof(*normalModeShortcuts);
