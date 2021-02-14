@@ -175,14 +175,16 @@ static unsigned int currentBg = 8;
 static unsigned int currentFg = 15;
 
 static const char *opencmd[] = {
-	"dwm_copy.sh",
-	"open",
+	"/bin/sh",
+	"-c",
+	"dwm_copy.sh open",
 	0
 };
 
 static const char *copycmd[] = {
-	"dwm_copy.sh",
-	"copy",
+	"/bin/sh",
+	"-c",
+	"dwm_copy.sh copy",
 	0
 };
 
