@@ -2,6 +2,8 @@
 
 #include "computer_specific.h"
 
+#define BIN "/home/steven/Documents/git-repos/remote-github/dotfiles/.bin/"
+
 /*
  * appearance
  *
@@ -177,14 +179,14 @@ static unsigned int currentFg = 15;
 static const char *opencmd[] = {
 	"/bin/sh",
 	"-c",
-	"dwm_copy.sh open",
+	BIN "dwm_copy.sh open",
 	0
 };
 
 static const char *copycmd[] = {
 	"/bin/sh",
 	"-c",
-	"dwm_copy.sh copy",
+	BIN "dwm_copy.sh copy",
 	0
 };
 
