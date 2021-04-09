@@ -23,6 +23,16 @@ Customizations
   - 'K' takes you up half the screen
   - 'J' takes you down half the screen
 
+Using color emojis. In order to make this work I need a patched version of
+libXft.
+
+To do this, go to https://github.com/uditkarode/libxft-bgra and follow the
+instructions for how to install.
+
+Then, I had to rename `libXft.so.2` that is in `/usr/lib/x86_64-linux-gnu` to
+`libXft.so.2.bak`. This makes gcc use my version instead of the packaged one.
+
+May also need to install `xutils-dev` to install libXft
 
 BRANCHES
 --------
